@@ -28,11 +28,23 @@ echo "Please enter a password for the user presta and save it in a safe place"
 echo "##########################"
 useradd -m presta
 
+# Install sudo
+echo "##########################"
+echo "Install sudo"
+echo "##########################"
+apt-get install sudo -y
+
 # Make the user sudoer
 echo "##########################"
 echo "Make the user sudoer"
 echo "##########################"
 usermod -aG sudo presta
+
+# Add the user presta to the sudoers file
+echo "##########################"
+echo "Add the user presta to the sudoers file"
+echo "##########################"
+echo "presta ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Disable the ssh access for the root user
 echo "##########################"
@@ -200,6 +212,12 @@ echo "##########################"
 a2ensite retro.conf
 a2ensite chat.conf
 
+# Disable the default virtual host
+echo "##########################"
+echo "Disable the default virtual host"
+echo "##########################"
+a2dissite 000-default.conf
+
 # Restart the apache service
 echo "##########################"
 echo "Restart the apache service"
@@ -269,19 +287,47 @@ echo "Go to http://shop.$domain_name to install prestashop"
 echo "Press enter when you have finished the installation of prestashop"
 read
 
-
-
 # Install letsencrypt
 echo "##########################"
 echo "Install letsencrypt"
 echo "##########################"
-apt install certbot python-certbot-apache -y
+apt install certbot python3-certbot-apache -y
 
 # Launch the letsencrypt script
 echo "##########################"
 echo "Launch the letsencrypt script"
 echo "##########################"
 certbot --apache
+
+# Restart the ssh service
+echo "##########################"
+echo "Restart the ssh service"
+echo "##########################"
+systemctl restart sshd
+
+# Add a user that can only connect with sftp and can only access to the folder /var/www
+echo "##########################"
+echo "Add a user that can only connect with sftp and can only access to the folder /var/www"
+echo "##########################"
+useradd -M -g www-data -s /usr/sbin/nologin webupload
+
+# Change the password of the user webupload
+echo "##########################"
+echo "Change the password of the user webupload"
+echo "Please save the password in a safe place"
+echo "##########################"
+passwd webupload
+
+# Change the file sshd_config
+echo "##########################"
+echo "Change the file sshd_config"
+echo "##########################"
+sed -i 's/Subsystem sftp \/usr\/lib\/openssh\/sftp-server/Subsystem sftp internal-sftp/g' /etc/ssh/sshd_config
+echo "Match User webupload
+    ChrootDirectory /var/www
+    ForceCommand internal-sftp
+    AllowTcpForwarding no
+    X11Forwarding no" >> /etc/ssh/sshd_config
 
 # Restart the ssh service
 echo "##########################"
