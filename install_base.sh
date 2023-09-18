@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "##########################"
 echo "Script to install the web server and the database server + phpmyadmin + prestashop + nodejs on Debian"
 echo "##########################"
@@ -24,9 +26,15 @@ apt-get upgrade -y
 # Create a new user named presta
 echo "##########################"
 echo "Create a new user named presta"
-echo "Please enter a password for the user presta and save it in a safe place"
 echo "##########################"
 useradd -m presta
+
+# Set a password for the user presta
+echo "##########################"
+echo "Set a password for the user presta"
+echo "Please save the password in a safe place"
+echo "##########################"
+passwd presta
 
 # Install sudo
 echo "##########################"
@@ -127,12 +135,15 @@ echo "Restart the apache service"
 echo "##########################"
 systemctl restart apache2
 
-# Create a new user retro with a random password and grant him all privileges on the database retro
+# Create a new user retro and ask the password password and grant him all privileges on the database retro
 echo "##########################"
-echo "Create a new user retro with a random password and grant him all privileges on the database retro"
+echo "Create a new user retro and ask the password password and grant him all privileges on the database retro"
 echo "Please save the password in a safe place"
-randompsswd=$(openssl rand -base64 12)
-mysql -u root -e "CREATE USER 'retro'@'localhost' IDENTIFIED BY '$randompsswd';"
+echo "##########################"
+echo "Please enter the password for the user retro"
+read -r passwdRetro
+# Create the user retro
+mysql -u root -e "CREATE USER 'retro'@'localhost' IDENTIFIED BY '$passwdRetro';"
 # Create the database retro
 mysql -u root -e "CREATE DATABASE retro;"
 # Grant all privileges on the database retro to the user retro
@@ -141,7 +152,7 @@ mysql -u root -e "GRANT ALL PRIVILEGES ON retro.* TO 'retro'@'localhost';"
 mysql -u root -e "FLUSH PRIVILEGES;"
 # Display the password
 echo "##########################"
-echo "The password for the user retro is $randompsswd"
+echo "The password for the user retro is $passwdRetro"
 echo "Please enter it in the installation of prestashop"
 echo "Also save it in a safe place"
 echo "##########################"
