@@ -107,18 +107,11 @@ echo "Please use a strong password and save it in a safe place"
 echo "##########################"
 mysql_secure_installation
 
-# Install phpmyadmin
-echo "##########################"
-echo "Install phpmyadmin"
-echo "Please choose apache2 when you will be asked to choose a web server"
-echo "##########################"
-apt install phpmyadmin -y
-
 # Get the php version into a variable
 echo "##########################"
 echo "Get the php version into a variable"
 echo "Your php version is:"
-php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,2,3
+php -v
 echo "##########################"
 php_version=$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,2,3)
 
@@ -126,7 +119,8 @@ php_version=$(php -v | head -n 1 | cut -d " " -f 2 | cut -c 1,2,3)
 echo "##########################"
 echo "Change php configuration to allow url fopen and set the upload_max_filesize to 32M"
 echo "##########################"
-sed -i "s/;allow_url_fopen = On/allow_url_fopen = On/g" /etc/php/$php_version/apache2/php.ini
+# if allow_url_fopen is off change it to on else do nothing
+sed -i "s/allow_url_fopen = Off/allow_url_fopen = On/g" /etc/php/$php_version/apache2/php.ini
 sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 32M/g" /etc/php/$php_version/apache2/php.ini
 
 # Restart the apache service
@@ -263,8 +257,8 @@ fi
 echo "##########################"
 echo "Please indicate the version of prestashop you want to install (example: 8.1.1)"
 echo "##########################"
-read version
-wget https://github.com/PrestaShop/PrestaShop/releases/download/$version/prestashop_$version.zip
+read -r version
+wget https://github.com/PrestaShop/PrestaShop/releases/download/"$version"/prestashop_"$version".zip
 
 # Verify if unzip is installed else install it
 if ! [ -x "$(command -v unzip)" ]; then
@@ -279,13 +273,13 @@ archive_name=$(ls | grep prestashop)
 echo "##########################"
 echo "Unzip the prestashop archive"
 echo "##########################"
-unzip $archive_name
+unzip "$archive_name"
 
 # Remove the archive
 echo "##########################"
 echo "Remove the archive"
 echo "##########################"
-rm $archive_name
+rm "$archive_name"
 
 # Change the owner and group of the folder /var/www/retro to www-data
 echo "##########################"
@@ -296,13 +290,13 @@ chown -R www-data:www-data /var/www/retro
 echo "Go to http://shop.$domain_name to install prestashop"
 # If it is finished, press enter
 echo "Press enter when you have finished the installation of prestashop"
-read
+read -r
 
 # Install letsencrypt
 echo "##########################"
 echo "Install letsencrypt"
 echo "##########################"
-apt install certbot python3-certbot-apache -y
+apt-get install certbot python3-certbot-apache -y
 
 # Launch the letsencrypt script
 echo "##########################"
