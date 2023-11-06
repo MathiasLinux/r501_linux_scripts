@@ -62,14 +62,24 @@ echo "##########################"
 sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
 
 # Install the lamp stack
+
+echo "##########################"
+echo "Install php 8.1 source"
+echo "##########################"
+apt-get -y install lsb-release ca-certificates curl
+curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
+sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
+apt-get update
+apt-get upgrade -y
+
 echo "##########################"
 echo "Install the lamp stack"
 echo "##########################"
-apt install apache2 php libapache2-mod-php mariadb-server php-mysql -y
+apt-get install apache2 php8.1 libapache2-mod-php8.1 mariadb-server php-mysql -y
 echo "##########################"
 echo "Install some php extensions commonly used by CMS"
 echo "##########################"
-apt install php-curl php-gd php-intl php-json php-mbstring php-xml php-zip -y
+apt-get install php8.1-curl php8.1-gd php8.1-intl php8.1-mbstring php8.1-xml php8.1-zip -y
 
 # Install a firewall and configure it in this case ufw
 echo "##########################"
