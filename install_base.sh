@@ -75,7 +75,7 @@ apt-get upgrade -y
 echo "##########################"
 echo "Install the lamp stack"
 echo "##########################"
-apt-get install apache2 php8.1 libapache2-mod-php8.1 mariadb-server php-mysql -y
+apt-get install apache2 php8.1 libapache2-mod-php8.1 mariadb-server php8.1-mysql -y
 echo "##########################"
 echo "Install some php extensions commonly used by CMS"
 echo "##########################"
@@ -301,6 +301,13 @@ echo "Go to http://shop.$domain_name to install prestashop"
 # If it is finished, press enter
 echo "Press enter when you have finished the installation of prestashop"
 read -r
+
+# delete install folder from prestashop
+echo "#####################################"
+echo "Delete install folder from prestashop"
+echo "#####################################"
+
+rm -rf /var/www/retro/install
 
 # Install letsencrypt
 echo "##########################"
